@@ -1,6 +1,6 @@
 package com.service.tasks.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 
@@ -28,6 +28,7 @@ public class User implements Serializable {
     private String email;
 
     @JsonIgnore
+    @Column(name = "password")
     private String password;
 
     public long getId() {
@@ -52,5 +53,15 @@ public class User implements Serializable {
 
     public void setUpdatedAt(ZonedDateTime updateTime) {
         updatedAt = updateTime;
+    }
+
+    @JsonIgnore
+    public String getPassword() {
+        return password;
+    }
+
+    @JsonProperty
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
