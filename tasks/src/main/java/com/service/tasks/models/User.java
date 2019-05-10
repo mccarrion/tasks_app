@@ -35,6 +35,19 @@ public class User implements Serializable {
         return id;
     }
 
+    /**
+     * This is the User constructor for when a user inputs valid information in
+     * the signup form.
+     * @param username
+     * @param email
+     * @param password
+     */
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
