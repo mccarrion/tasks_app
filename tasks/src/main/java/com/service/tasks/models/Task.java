@@ -6,11 +6,10 @@ import javax.persistence.*;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.Collection;
 
 @Entity
-@Table(name = "users")
-public class User implements Serializable {
+@Table(name = "tasks")
+public class Task implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -22,17 +21,15 @@ public class User implements Serializable {
     @Column(name="updatetime", nullable = false)
     private ZonedDateTime updatedAt;
 
-    @Column(name = "username")
-    private String username;
+	@ManyToOne
+	@JoinColumn(name = "createdby", referencedColumnName = "id", nullable = false)
+	private User createdBy;
 
-    @Column(name = "email")
-    private String email;
+	@Column(name="title")
+	private String title;
 
-    @JsonIgnore
-    private String password;
-
-    @OneToMany(mappedBy = "createdBy")
-	private Collection<Task> tasks;
+	@Column(name="content")
+	private String content;
 
     public long getId() {
         return id;
@@ -58,11 +55,27 @@ public class User implements Serializable {
         updatedAt = updateTime;
     }
 
-    public Collection<Task> getTasks() {
-        return tasks;
+    public User getCreatedBy() {
+        return createdBy;
     }
     
-    public void setTasks(Collection<Task> tasks) {
-        this.tasks = tasks;
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
+    public String getContent() {
+        return content;
+    }
+    
+    public void setContent(String content) {
+        this.content = content;
     }
 }
