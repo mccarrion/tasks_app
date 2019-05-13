@@ -6,7 +6,9 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
-public abstract class Base implements Comparable<Base>, Serializable {
+public abstract class Base implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -41,5 +43,4 @@ public abstract class Base implements Comparable<Base>, Serializable {
     public void setUpdatedAt(ZonedDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
 }
