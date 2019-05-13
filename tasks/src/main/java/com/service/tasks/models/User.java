@@ -4,23 +4,9 @@ import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 
-import java.io.Serializable;
-import java.time.ZonedDateTime;
-
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private long id;
-
-    @Column(name="createtime", nullable = false)
-    private ZonedDateTime createdAt;
-
-    @Column(name="updatetime", nullable = false)
-    private ZonedDateTime updatedAt;
-
+public class User extends Base {
     @Column(name = "username")
     private String username;
 
@@ -30,10 +16,6 @@ public class User implements Serializable {
     @JsonIgnore
     @Column(name = "password")
     private String password;
-
-    public long getId() {
-        return id;
-    }
 
     /**
      * This is the User constructor for when a user inputs valid information in
@@ -48,26 +30,6 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(ZonedDateTime createTime) {
-        createdAt = createTime;
-    }
-
-    public ZonedDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(ZonedDateTime updateTime) {
-        updatedAt = updateTime;
-    }
-
     @JsonIgnore
     public String getPassword() {
         return password;
@@ -76,5 +38,13 @@ public class User implements Serializable {
     @JsonProperty
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
