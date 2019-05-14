@@ -54,7 +54,7 @@ public class User extends Base {
     public Collection<Task> getTasks() {
         return tasks;
     }
-    
+
     public void setTasks(Collection<Task> tasks) {
         this.tasks = tasks;
     }
