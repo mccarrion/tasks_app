@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 
+import java.util.Collection;
+
 @Entity
 @Table(name = "users")
 public class User extends Base {
@@ -18,6 +20,9 @@ public class User extends Base {
     @JsonIgnore
     @Column(name = "password")
     private String password;
+
+    @OneToMany(mappedBy = "createdBy")
+    private Collection<Task> tasks;
 
     /**
      * This is the User constructor for when a user inputs valid information in
@@ -48,5 +53,13 @@ public class User extends Base {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Collection<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Collection<Task> tasks) {
+        this.tasks = tasks;
     }
 }
