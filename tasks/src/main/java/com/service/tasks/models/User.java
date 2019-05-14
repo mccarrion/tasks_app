@@ -1,26 +1,13 @@
 package com.service.tasks.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 
-import java.io.Serializable;
-import java.time.ZonedDateTime;
-import java.util.Collection;
-
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private long id;
-
-    @Column(name="createtime", nullable = false)
-    private ZonedDateTime createdAt;
-
-    @Column(name="updatetime", nullable = false)
-    private ZonedDateTime updatedAt;
+public class User extends Base {
+    private static final long serialVersionUID = 1L;
 
     @Column(name = "username")
     private String username;
@@ -29,35 +16,41 @@ public class User implements Serializable {
     private String email;
 
     @JsonIgnore
+    @Column(name = "password")
     private String password;
 
-    @OneToMany(mappedBy = "createdBy")
 	private Collection<Task> tasks;
-
-    public long getId() {
-        return id;
+    @OneToMany(mappedBy = "createdBy")
+    /**
+     * This is the User constructor for when a user inputs valid information in
+     * the signup form.
+     * @param username
+     * @param email
+     * @param password
+     */
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    @JsonIgnore
+    public String getPassword() {
+        return password;
     }
 
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
+    @JsonProperty
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public void setCreatedAt(ZonedDateTime createTime) {
-        createdAt = createTime;
+    public String getEmail() {
+        return email;
     }
 
-    public ZonedDateTime getUpdatedAt() {
-        return updatedAt;
+    public void setEmail(String email) {
+        this.email = email;
     }
-
-    public void setUpdatedAt(ZonedDateTime updateTime) {
-        updatedAt = updateTime;
-    }
-
     public Collection<Task> getTasks() {
         return tasks;
     }
