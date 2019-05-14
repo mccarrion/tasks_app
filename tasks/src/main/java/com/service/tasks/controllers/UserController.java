@@ -10,10 +10,10 @@ import com.service.tasks.repositories.*;
  * User API
  */
 @RestController
-@RequestMapping(value = "/users/")
+@RequestMapping(value = "/users")
 public class UserController {
     
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
 }
