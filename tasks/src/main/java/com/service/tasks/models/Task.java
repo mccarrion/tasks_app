@@ -1,5 +1,7 @@
 package com.service.tasks.models;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,7 +10,8 @@ public class Task extends Base {
     private static final long serialVersionUID = 1L;
 
     @ManyToOne
-    @JoinColumn(name = "createdby", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "created_by", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private User createdBy;
 
     @Column(name="title")
@@ -16,6 +19,11 @@ public class Task extends Base {
 
     @Column(name="content")
     private String content;
+
+    public Task(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 
     public User getCreatedBy() {
         return createdBy;
