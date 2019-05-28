@@ -17,11 +17,11 @@ import static com.service.tasks.security.SecurityConstants.*;
 
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
-    private UserService userDetailsService;
+    private UserService userService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public WebSecurity(UserService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userDetailsService = userDetailsService;
+    public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userService = userService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -39,7 +39,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
     }
 
     @Bean
