@@ -18,9 +18,7 @@ import com.service.tasks.repositories.*;
 @RequestMapping(value = "/users")
 public class UserController {
     
-    @Autowired
     private UserRepository userRepository;
-
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
