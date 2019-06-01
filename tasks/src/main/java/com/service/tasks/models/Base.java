@@ -14,11 +14,22 @@ public abstract class Base implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name="created_at", nullable = false)
+    @Column(name="created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;
 
     @Column(name="updated_at", nullable = false)
     private ZonedDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = ZonedDateTime.now();
+        updatedAt = ZonedDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = ZonedDateTime.now();
+    }
 
     public Long getId() {
         return id;
