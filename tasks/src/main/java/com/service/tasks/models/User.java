@@ -25,12 +25,18 @@ public class User extends Base {
     private Collection<Task> tasks;
 
     /**
+     * Zero argument constructor for the purpose of deserialization
+     * Part of default behavior in Jackson library
+     */
+    public User() {}
+
+    /**
      * This is the User constructor for when a user inputs valid information in
      * the signup form.
      * @param username
      * @param email
      * @param password
-     */
+    */
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
