@@ -4,8 +4,8 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import TasksScreen from '../screens/TasksScreen';
-import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import HistoryScreen from '../screens/HistoryScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const TasksStack = createStackNavigator({
   Tasks: TasksScreen,
@@ -17,32 +17,32 @@ TasksStack.navigationOptions = {
     <TabBarIcon
       focused={focused}
       name={
-        Platform.OS === 'ios' ? 'ios-checkmark-circle-outline' 
-          : 'md-checkmark-circle-outline'
+        Platform.OS === 'ios' ? 'ios-checkmark' 
+          : 'md-checkmark'
       }
     />
   ),
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
+const HistoryStack = createStackNavigator({
+  History: HistoryScreen,
 });
 
-LinksStack.navigationOptions = {
+HistoryStack.navigationOptions = {
   tabBarLabel: 'History',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-stats' : 'md-stats'}
+      name={Platform.OS === 'ios' ? 'ios-done-all' : 'md-done-all'}
     />
   ),
 };
 
-const SettingsStack = createStackNavigator({
-  Settings: SettingsScreen,
+const ProfileStack = createStackNavigator({
+  Profile: ProfileScreen,
 });
 
-SettingsStack.navigationOptions = {
+ProfileStack.navigationOptions = {
   tabBarLabel: 'Profile',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
@@ -53,7 +53,7 @@ SettingsStack.navigationOptions = {
 };
 
 export default createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
-  SettingsStack,
+  TasksStack,
+  HistoryStack,
+  ProfileStack,
 });
