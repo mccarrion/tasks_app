@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity  } from 'react-native';
 import CheckBox from 'react-native-check-box';
 
 export class ListItem extends React.Component {
@@ -18,7 +18,11 @@ export class ListItem extends React.Component {
     render() {
         return (
             <View style={styles.listItem}>
-                <CheckBox rightText={this.props.data.title} checkBoxColor="#2F95DC" isChecked={this.state.checked} onClick={this.onCheckedChange}/>
+                <CheckBox checkBoxColor="#2F95DC" isChecked={this.state.checked} onClick={this.onCheckedChange}/>
+
+                <TouchableOpacity onPress={this.props.onClick}>
+                    <Text style={styles.taskText}>{this.props.data.title}</Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -28,5 +32,11 @@ const styles = StyleSheet.create({
     listItem: {
         paddingLeft: 15,
         paddingTop: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
+    taskText: {
+        fontSize: 20,
+        marginLeft: 10,
+    }
 });

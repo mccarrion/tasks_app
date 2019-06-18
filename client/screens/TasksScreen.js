@@ -25,25 +25,68 @@ export default class TasksScreen extends React.Component {
 
         this.state = {
             tasks: [],
-            showAddDialog: false,
-            newTaskTitle: "",
-            newTaskDescription: "",
+            showEditWindow: false,
+            currentTaskIndex: 0,
+            currentTaskOriginal: null,
         };
     }
 
     onAddClicked = () => {
         this.setState({
-            showAddDialog: true,
-            newTaskTitle: "",
-            newTaskDescription: "",
+            tasks: [...this.state.tasks, {title: "", description: "", checked: false}],
+            showEditWindow: true,
+            currentTaskIndex: this.state.tasks.length,
+            currentTaskOriginal: null,
         });
     }
 
-    addTask = () => {
+    onItemClicked = (index) => {
         this.setState({
-            tasks: [...this.state.tasks, {title: this.state.newTaskTitle, description: this.state.newTaskDescription, checked: false}],
-            showAddDialog: false,
+            showEditWindow: true,
+            currentTaskIndex: index,
+            currentTaskOriginal: Object.assign({}, this.state.tasks[index]),
         });
+    }
+
+    onCancelClicked = () => {
+        let tasks = [...this.state.tasks];
+
+        if (this.state.currentTaskOriginal) {
+            tasks[this.state.currentTaskIndex] = this.state.currentTaskOriginal;
+        } else {
+            tasks.splice(this.state.currentTaskIndex, 1);
+        }
+
+        this.setState({
+            tasks,
+            showEditWindow: false,
+        });
+    }
+
+    onFinishClicked = () => {
+        let tasks = [...this.state.tasks];
+        let currentTask = tasks[this.state.currentTaskIndex];
+
+        if (currentTask.title === "") {
+            tasks.splice(this.state.currentTaskIndex, 1);
+        }
+
+        this.setState({
+            tasks,
+            showEditWindow: false,
+        });
+    }
+
+    onTaskTitleChange = (newTitle) => {
+        let tasks = [...this.state.tasks];
+        tasks[this.state.currentTaskIndex].title = newTitle;
+        this.setState({tasks});
+    }
+
+    onTaskDescriptionChange = (newDescription) => {
+        let tasks = [...this.state.tasks];
+        tasks[this.state.currentTaskIndex].description = newDescription;
+        this.setState({tasks});
     }
 
     render() {
@@ -52,7 +95,12 @@ export default class TasksScreen extends React.Component {
                 <FlatList
                     data={this.state.tasks}
                     keyExtractor={(item, index) => index.toString()}
-                    renderItem={({item}) => <ListItem data={item} onCheckedChange={(checked) => {item.checked = checked}}/>}/>
+                    renderItem={({item, index}) => (
+                        <ListItem 
+                            data={item}
+                            onClick={() => this.onItemClicked(index)}
+                            onCheckedChange={(checked) => {item.checked = checked}}/>
+                    )}/>
 
                 <ActionButton
                     buttonColor="#2F95DC"
@@ -61,31 +109,35 @@ export default class TasksScreen extends React.Component {
                 <Modal
                     animationType="slide"
                     transparent={false}
-                    visible={this.state.showAddDialog}
-                    onRequestClose={() => this.setState({showAddDialog: false})}>
+                    visible={this.state.showEditWindow}
+                    onRequestClose={() => this.setState({showEditWindow: false})}>
 
                     <View style={styles.modalContainer}>
                         <View style={styles.row}>
-                            <TouchableOpacity onPress={() => {this.setState({showAddDialog: false})}}>
+                            <TouchableOpacity onPress={this.onCancelClicked}>
                                 <Text style={styles.taskModalButton}>Cancel</Text>
                             </TouchableOpacity>
 
-                            <Text style={styles.newTaskHeader}>Add new task</Text>
+                            <Text style={styles.currentTaskHeader}>
+                                {this.state.currentTaskOriginal ? "Edit Task" : "New Task"}
+                            </Text>
 
-                            <TouchableOpacity onPress={this.addTask}>
+                            <TouchableOpacity onPress={this.onFinishClicked}>
                                 <Text style={styles.taskModalButton}>Finish</Text>
                             </TouchableOpacity>
                         </View>
 
-                        <TextInput style={styles.textInput} placeholder="Title" value={this.state.newTaskTitle} onChangeText={(newTaskTitle) => this.setState({newTaskTitle})}/>
-                        <TextInput style={styles.textInput} placeholder="Description" value={this.state.newTaskDescription} onChangeText={(newTaskDescription) => this.setState({newTaskDescription})}/>
+                        <TextInput 
+                            style={styles.textInput} 
+                            placeholder="Title" 
+                            value={this.state.tasks[this.state.currentTaskIndex] ? this.state.tasks[this.state.currentTaskIndex].title : ""} 
+                            onChangeText={this.onTaskTitleChange}/>
 
-                        {/*
-                        <View style={styles.row}>
-                        <Button style={styles.button} title="Cancel" onPress={() => {this.setState({showAddDialog: false})}}/>
-                        <Button style={styles.button} title="Add" onPress={this.addTask}/>
-                        </View>
-                        */}
+                        <TextInput 
+                            style={styles.textInput} 
+                            placeholder="Description" 
+                            value={this.state.tasks[this.state.currentTaskIndex] ? this.state.tasks[this.state.currentTaskIndex].description : ""} 
+                            onChangeText={this.onTaskDescriptionChange}/>
                     </View>
                 </Modal>
             </View>
@@ -101,7 +153,7 @@ const styles = StyleSheet.create({
     modalContainer: {
         margin: 15,
     },
-    newTaskHeader: {
+    currentTaskHeader: {
         fontSize: 24,
     },
     textInput: {
