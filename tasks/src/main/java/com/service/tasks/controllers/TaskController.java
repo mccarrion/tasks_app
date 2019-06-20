@@ -1,5 +1,8 @@
 package com.service.tasks.controllers;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -22,41 +25,68 @@ public class TaskController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/{userId}")
-    public List<Task> getTasksByUser(@PathVariable Long userId) {
-        return taskRepository.findByCreatedBy(userId);
+    @GetMapping()
+    public List<Task> getTasksByUser(@RequestHeader(value="Authorization") String authorizationHeader) {
+        String username = extractUsername(authorizationHeader);
+        User user = userRepository.findByUsername(username);
+
+        if (user != null) {
+            return taskRepository.findByCreatedBy(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
     }
 
-    @PostMapping("/{userId}")
-    public Task addTask(@PathVariable Long userId, @Valid @RequestBody Task task) {
-        return userRepository.findById(userId).map(user -> {
+    @PostMapping()
+    public Task addTask(@RequestHeader(value="Authorization") String authorizationHeader, @Valid @RequestBody Task task) {
+        String username = extractUsername(authorizationHeader);
+        User user = userRepository.findByUsername(username);
+
+        if (user != null) {
             task.setCreatedBy(user);
             return taskRepository.save(task);
-        }).orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    @PutMapping("/{userId}/{taskId}")
-    public Task updateTask(@PathVariable Long userId, @PathVariable Long taskId, @Valid @RequestBody Task taskRequest) {
-        if (!userRepository.existsById(userId)) {
+        } else {
             throw new RuntimeException("User not found");
         }
-
-        return taskRepository.findById(taskId).map(task -> {
-            task.setTitle(taskRequest.getTitle());
-            task.setContent(taskRequest.getContent());
-            return taskRepository.save(task);
-        }).orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
-    @DeleteMapping("/{userId}/{taskId}")
-    public ResponseEntity<?> deleteAnswer(@PathVariable Long userId, @PathVariable Long taskId) {
-        if (!userRepository.existsById(userId)) {
+    @PutMapping("/{taskId}")
+    public Task updateTask(@RequestHeader(value="Authorization") String authorizationHeader, @PathVariable Long taskId, @Valid @RequestBody Task taskRequest) {
+        String username = extractUsername(authorizationHeader);
+        User user = userRepository.findByUsername(username);
+
+        if (user != null) {
+            return taskRepository.findById(taskId).map(task -> {
+                task.setTitle(taskRequest.getTitle());
+                task.setContent(taskRequest.getContent());
+                return taskRepository.save(task);
+            }).orElseThrow(() -> new RuntimeException("Task not found"));
+        } else {
             throw new RuntimeException("User not found");
         }
+    }
 
-        return taskRepository.findById(taskId).map(task -> {
-            taskRepository.delete(task);
-            return ResponseEntity.ok().build();
-        }).orElseThrow(() -> new RuntimeException("Task not found"));
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<?> deleteTask(@RequestHeader(value="Authorization") String authorizationHeader, @PathVariable Long taskId) {
+        String username = extractUsername(authorizationHeader);
+        User user = userRepository.findByUsername(username);
+
+        if (user != null) {
+            return taskRepository.findById(taskId).map(task -> {
+                taskRepository.delete(task);
+                return ResponseEntity.ok().build();
+            }).orElseThrow(() -> new RuntimeException("Task not found"));
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    public String extractUsername(String authToken) {
+        try {
+            DecodedJWT jwt = JWT.decode(authToken.substring(7));
+            return jwt.getSubject();
+        } catch (JWTDecodeException e) {
+            throw new RuntimeException("Invalid JWT token");
+        }
     }
 }
