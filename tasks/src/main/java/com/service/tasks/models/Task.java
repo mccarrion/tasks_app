@@ -20,6 +20,8 @@ public class Task extends Base {
     @Column(name="content")
     private String content;
 
+    public Task() {}
+
     public Task(String title, String content) {
         this.title = title;
         this.content = content;
