@@ -24,23 +24,19 @@ export default class LoginScreen extends React.Component {
             password: this.state.password
         };
 
-        try {
-            let res = await fetch('API_URL', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-            this.handleResponse(res);
-        } catch(error) {
-            alert(error);
-        }
+        let res = await fetch('API_URL', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        this.handleResponse(res);
     }
 
     handleResponse = (res) => {
         if (res.status === 200) {
-            alert("Succesful login!");
+            await AsyncStorage.setItem('userToken', res.data);
         }
     }
 
