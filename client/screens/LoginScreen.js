@@ -27,8 +27,10 @@ export default class LoginScreen extends React.Component {
         let res = await fetch('API_URL', {
             method: 'POST',
             headers: {
+                //Accept: "application/json",
                 'Content-Type': 'application/json',
             },
+            //type:'cors',
             body: JSON.stringify(data),
         });
         this.handleResponse(res);
