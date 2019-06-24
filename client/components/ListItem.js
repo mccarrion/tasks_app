@@ -5,20 +5,12 @@ import CheckBox from 'react-native-check-box';
 export class ListItem extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {checked: this.props.data.checked};
-    }
-
-    onCheckedChange = () => {
-        this.setState({checked: !this.state.checked}, () => {
-            this.props.onCheckedChange(this.state.checked);
-        });
     }
 
     render() {
         return (
             <View style={styles.listItem}>
-                <CheckBox checkBoxColor="#2F95DC" isChecked={this.state.checked} onClick={this.onCheckedChange}/>
+                <CheckBox checkBoxColor="#2F95DC" isChecked={this.props.data.completed} onClick={this.props.onCheckedChange}/>
 
                 <TouchableOpacity onPress={this.props.onClick}>
                     <Text style={styles.taskText}>{this.props.data.title}</Text>

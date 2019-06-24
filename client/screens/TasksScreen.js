@@ -15,6 +15,9 @@ import ActionButton from 'react-native-action-button';
 
 import {ListItem} from '../components/ListItem.js';
 
+const API_URL = "<API URL HERE>";
+const AUTH_TOKEN = "<JWT TOKEN HERE>";
+
 export default class TasksScreen extends React.Component {
     static navigationOptions = {
         title: "Tasks",
@@ -23,20 +26,82 @@ export default class TasksScreen extends React.Component {
     constructor(props) {
         super(props);
 
+        this.fetchTasks = this.fetchTasks.bind(this);
+        this.createTask = this.createTask.bind(this);
+        this.updateTask = this.updateTask.bind(this);
+        this.deleteTask = this.deleteTask.bind(this);
+
         this.state = {
             tasks: [],
             showEditWindow: false,
             currentTaskIndex: 0,
-            currentTaskOriginal: null,
+            currentTaskTitle: "",
+            currentTaskContent: "",
+            newTask: false,
         };
+    }
+
+    componentDidMount() {
+        this.fetchTasks().then((tasks) => {
+            tasks.sort((a, b) => a.id - b.id);
+            this.setState({tasks});
+        });
+    }
+
+    async fetchTasks() {
+        const result = await fetch(`${API_URL}/tasks`, {
+            method: 'GET',
+            headers: {
+                'Authorization': AUTH_TOKEN,
+            },
+        });
+
+        return result.json();
+    }
+
+    async createTask(title, content) {
+        const task = {'title': title, 'content': content};
+        const result = await fetch(`${API_URL}/tasks`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': AUTH_TOKEN,
+            },
+            body: JSON.stringify(task),
+        });
+
+        return result.json();
+    }
+
+    async updateTask(task) {
+        const result = await fetch(`${API_URL}/tasks/${task.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': AUTH_TOKEN,
+            },
+            body: JSON.stringify(task),
+        });
+
+        return result.json();
+    }
+
+    async deleteTask(task) {
+        const result = await fetch(`${API_URL}/tasks/${task.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': AUTH_TOKEN,
+            },
+        });
     }
 
     onAddClicked = () => {
         this.setState({
-            tasks: [...this.state.tasks, {title: "", description: "", checked: false}],
             showEditWindow: true,
             currentTaskIndex: this.state.tasks.length,
-            currentTaskOriginal: null,
+            currentTaskTitle: "",
+            currentTaskContent: "",
+            newTask: true,
         });
     }
 
@@ -44,49 +109,60 @@ export default class TasksScreen extends React.Component {
         this.setState({
             showEditWindow: true,
             currentTaskIndex: index,
-            currentTaskOriginal: Object.assign({}, this.state.tasks[index]),
+            currentTaskTitle: this.state.tasks[index].title,
+            currentTaskContent: this.state.tasks[index].content,
+            newTask: false,
         });
     }
 
     onCancelClicked = () => {
-        let tasks = [...this.state.tasks];
-
-        if (this.state.currentTaskOriginal) {
-            tasks[this.state.currentTaskIndex] = this.state.currentTaskOriginal;
-        } else {
-            tasks.splice(this.state.currentTaskIndex, 1);
-        }
-
-        this.setState({
-            tasks,
-            showEditWindow: false,
-        });
+        this.setState({showEditWindow: false});
     }
 
     onFinishClicked = () => {
         let tasks = [...this.state.tasks];
-        let currentTask = tasks[this.state.currentTaskIndex];
 
-        if (currentTask.title === "") {
+        if (this.state.currentTaskTitle !== "") {
+            if (this.state.newTask) {
+                this.createTask(this.state.currentTaskTitle, this.state.currentTaskContent).then((newTask) => {
+                    tasks.push(newTask);
+                    this.setState({tasks});
+                });
+            } else {
+                let currentTask = tasks[this.state.currentTaskIndex];
+                currentTask.title = this.state.currentTaskTitle;
+                currentTask.content = this.state.currentTaskContent;
+
+                this.setState({tasks});
+                this.updateTask(currentTask);
+            }
+        } else if (!this.state.newTask) {
+            const currentTask = tasks[this.state.currentTaskIndex];
             tasks.splice(this.state.currentTaskIndex, 1);
+
+            this.setState({tasks});
+            this.deleteTask(currentTask);
         }
 
-        this.setState({
-            tasks,
-            showEditWindow: false,
-        });
+        this.setState({showEditWindow: false});
+    }
+
+    onTaskCheckedChange = (index) => {
+        let tasks = [...this.state.tasks];
+        let currentTask = tasks[index];
+
+        currentTask.completed = !currentTask.completed;
+
+        this.setState({tasks});
+        this.updateTask(currentTask);
     }
 
     onTaskTitleChange = (newTitle) => {
-        let tasks = [...this.state.tasks];
-        tasks[this.state.currentTaskIndex].title = newTitle;
-        this.setState({tasks});
+        this.setState({currentTaskTitle: newTitle});
     }
 
-    onTaskDescriptionChange = (newDescription) => {
-        let tasks = [...this.state.tasks];
-        tasks[this.state.currentTaskIndex].description = newDescription;
-        this.setState({tasks});
+    onTaskContentChange = (newContent) => {
+        this.setState({currentTaskContent: newContent});
     }
 
     render() {
@@ -96,10 +172,10 @@ export default class TasksScreen extends React.Component {
                     data={this.state.tasks}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({item, index}) => (
-                        <ListItem 
+                        <ListItem
                             data={item}
                             onClick={() => this.onItemClicked(index)}
-                            onCheckedChange={(checked) => {item.checked = checked}}/>
+                            onCheckedChange={() => this.onTaskCheckedChange(index)}/>
                     )}/>
 
                 <ActionButton
@@ -119,7 +195,7 @@ export default class TasksScreen extends React.Component {
                             </TouchableOpacity>
 
                             <Text style={styles.currentTaskHeader}>
-                                {this.state.currentTaskOriginal ? "Edit Task" : "New Task"}
+                                {this.state.newTask ? "New Task" : "Edit Task"}
                             </Text>
 
                             <TouchableOpacity onPress={this.onFinishClicked}>
@@ -127,17 +203,17 @@ export default class TasksScreen extends React.Component {
                             </TouchableOpacity>
                         </View>
 
-                        <TextInput 
-                            style={styles.textInput} 
-                            placeholder="Title" 
-                            value={this.state.tasks[this.state.currentTaskIndex] ? this.state.tasks[this.state.currentTaskIndex].title : ""} 
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder="Title"
+                            value={this.state.currentTaskTitle}
                             onChangeText={this.onTaskTitleChange}/>
 
-                        <TextInput 
-                            style={styles.textInput} 
-                            placeholder="Description" 
-                            value={this.state.tasks[this.state.currentTaskIndex] ? this.state.tasks[this.state.currentTaskIndex].description : ""} 
-                            onChangeText={this.onTaskDescriptionChange}/>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder="Content"
+                            value={this.state.currentTaskContent}
+                            onChangeText={this.onTaskContentChange}/>
                     </View>
                 </Modal>
             </View>
