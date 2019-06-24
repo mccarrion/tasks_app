@@ -20,11 +20,15 @@ public class Task extends Base {
     @Column(name="content")
     private String content;
 
+    @Column(name="completed")
+    private boolean completed;
+
     public Task() {}
 
-    public Task(String title, String content) {
+    public Task(String title, String content, boolean completed) {
         this.title = title;
         this.content = content;
+        this.completed = completed;
     }
 
     public User getCreatedBy() {
@@ -49,5 +53,13 @@ public class Task extends Base {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }

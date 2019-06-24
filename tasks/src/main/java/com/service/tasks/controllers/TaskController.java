@@ -59,6 +59,7 @@ public class TaskController {
             return taskRepository.findById(taskId).map(task -> {
                 task.setTitle(taskRequest.getTitle());
                 task.setContent(taskRequest.getContent());
+                task.setCompleted(taskRequest.getCompleted());
                 return taskRepository.save(task);
             }).orElseThrow(() -> new RuntimeException("Task not found"));
         } else {
