@@ -7,27 +7,37 @@ import {
     View,
 } from 'react-native';
 
-class AuthLoadingScreen extends React.Component {
-    constructor(props) {
-        super(props);
+export default class AuthLoadingScreen extends React.Component {
+    constructor() {
+        super();
         this._bootstrapAsync();
     }
-
-    // Fetch token from storage then navigate
+  
+    // Fetch the token from storage then navigate to our appropriate place
     _bootstrapAsync = async () => {
-        const userToken = await AsyncStorage.getItem('userStorage');
+        const userToken = await AsyncStorage.getItem('userToken');
 
-        // Switch to App or Auth screen and loading screen will be unmounted
-        this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+        // This will switch to the App screen or Auth screen and this loading
+        // screen will be unmounted and thrown away.
+        this.props.navigation.navigate(userToken ? 'Main' : 'Auth');
     };
-
-    // Render loading content
+  
+    // Render any loading content that you like here
     render() {
-        return (
-            <View>
-                <ActivityIndicator />
-                <StatusBar barStyle="default" />
-            </View>
-        )
+      return (
+        <View style={styles.container}>
+            <ActivityIndicator />
+            <StatusBar barStyle="default" />
+        </View>
+      );
     }
-}
+  }
+  
+  const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+  });
+  
