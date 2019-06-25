@@ -1,10 +1,12 @@
 import React from 'react';
 import {
+    AsyncStorage,
     Button,
     StyleSheet,
     TextInput,
     View
 } from 'react-native';
+import { API_URL } from '../constants/General';
 
 export default class LoginScreen extends React.Component {
     state = {
@@ -12,33 +14,35 @@ export default class LoginScreen extends React.Component {
         password: ''
     }
 
-    handleChange = (key, value) => {
+    onChangeText = (key, value) => {
         this.setState({
             [key]: value
         });
     }
 
-    async handleSubmit() {
+    handleSubmit = async () => {
         let data = {
             username: this.state.username,
             password: this.state.password
         };
 
-        let res = await fetch('API_URL', {
+        let res = await fetch(`${API_URL}/login`, {
             method: 'POST',
             headers: {
-                //Accept: "application/json",
                 'Content-Type': 'application/json',
             },
-            //type:'cors',
+            type:'cors',
             body: JSON.stringify(data),
         });
-        this.handleResponse(res);
+        this._handleResponse(res);
     }
 
-    handleResponse = (res) => {
+    _handleResponse = async (res) => {
         if (res.status === 200) {
-            await AsyncStorage.setItem('userToken', res.data);
+            await AsyncStorage.setItem(
+                'userToken', res.headers.get('Authorization')
+            );
+            this.props.navigation.navigate('App');
         }
     }
 
@@ -48,12 +52,12 @@ export default class LoginScreen extends React.Component {
                 <TextInput 
                     style={styles.input}
                     placeholder='Username'
-                    onChangeText={value => this.handleChange('username', value)}
+                    onChangeText={value => this.onChangeText('username', value)}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder='Password'
-                    onChangeText={value => this.handleChange('password', value)}
+                    onChangeText={value => this.onChangeText('password', value)}
                 />
                 <Button
                     title='Login'

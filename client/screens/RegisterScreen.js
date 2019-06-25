@@ -5,11 +5,11 @@ import {
     TextInput,
     View
 } from 'react-native';
+import { API_URL } from '../constants/General';
 
 export default class RegisterScreen extends React.Component {
     state = {
         username: '',
-        email: '',
         password: ''
     }
 
@@ -22,22 +22,17 @@ export default class RegisterScreen extends React.Component {
     async handleSubmit() {
         let data = {
             username: this.state.username,
-            email: this.state.email,
             password: this.state.password
         };
 
-        try {
-            let res = await fetch('API_URL', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-            this.handleResponse(res);
-        } catch(error) {
-            alert(error);
-        }
+        let res = await fetch(`${API_URL}/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        this.handleResponse(res);
     }
 
     handleResponse = (res) => {
@@ -53,11 +48,6 @@ export default class RegisterScreen extends React.Component {
                     style={styles.input}
                     placeholder='Username'
                     onChangeText={value => this.handleChange('username', value)} 
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder='Email'
-                    onChangeText={value => this.handleChange('email', value)} 
                 />
                 <TextInput 
                     style={styles.input}
