@@ -9,6 +9,10 @@ import {
 import { API_URL } from '../constants/General';
 
 export default class LoginScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Login',
+    };
+
     state = {
         username: '',
         password: ''
@@ -42,27 +46,34 @@ export default class LoginScreen extends React.Component {
             await AsyncStorage.setItem(
                 'userToken', res.headers.get('Authorization')
             );
-            this.props.navigation.navigate('App');
+            this.props.navigation.navigate('Main');
         }
     }
 
     render() {
         return (
             <View style={styles.container}>
-                <TextInput 
-                    style={styles.input}
-                    placeholder='Username'
-                    onChangeText={value => this.onChangeText('username', value)}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder='Password'
-                    onChangeText={value => this.onChangeText('password', value)}
-                />
-                <Button
-                    title='Login'
-                    onPress={this.handleSubmit}
-                />
+                <View style={styles.card}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder='Username'
+                        onChangeText={value => this.onChangeText('username', value)} 
+                    />
+                    <TextInput 
+                        style={styles.input}
+                        placeholder='Password'
+                        onChangeText={value => this.onChangeText('password', value)}
+                    />
+                    <Button 
+                        title='Login'
+                        onPress={this.handleSubmit} 
+                    />
+                    {/* TODO: Change to text and link */}
+                    <Button
+                        title="Don't have an account? Register"
+                        onPress={() => this.props.navigation.navigate('Register')}
+                    />
+                </View>
             </View>
         );
     }
@@ -70,12 +81,22 @@ export default class LoginScreen extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#fff',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      backgroundColor: '#fff',
+    },
+    card: {
+      flexDirection: 'column',
+      justifyContent: 'center',
+      // TODO: use flexDirection 'column' to center form
+      height: 400,
+      width: 250,
+      backgroundColor: '#fff',
     },
     input: {
-        width: 200,
+        alignItems: 'center',
         height: 40,
-        fontSize: 12,
+        margin: 5,
+        fontSize: 18,
     },
 });

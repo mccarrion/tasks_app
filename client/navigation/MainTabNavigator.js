@@ -4,7 +4,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import TasksScreen from '../screens/TasksScreen';
-import HistoryScreen from '../screens/HistoryScreen';
+import CompletedScreen from '../screens/CompletedScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const TasksStack = createStackNavigator({
@@ -24,12 +24,12 @@ TasksStack.navigationOptions = {
   ),
 };
 
-const HistoryStack = createStackNavigator({
-  History: HistoryScreen,
+const CompletedStack = createStackNavigator({
+  Completed: CompletedScreen,
 });
 
-HistoryStack.navigationOptions = {
-  tabBarLabel: 'History',
+CompletedStack.navigationOptions = {
+  tabBarLabel: 'Completed',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -54,6 +54,6 @@ ProfileStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   TasksStack,
-  HistoryStack,
+  CompletedStack,
   ProfileStack,
 });
