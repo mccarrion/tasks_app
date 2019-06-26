@@ -8,6 +8,10 @@ import {
 import { API_URL } from '../constants/General';
 
 export default class RegisterScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Register',
+    };
+
     state = {
         username: '',
         password: ''
@@ -44,20 +48,27 @@ export default class RegisterScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <TextInput
-                    style={styles.input}
-                    placeholder='Username'
-                    onChangeText={value => this.handleChange('username', value)} 
-                />
-                <TextInput 
-                    style={styles.input}
-                    placeholder='Password'
-                    onChangeText={value => this.handleChange('password', value)}
-                />
-                <Button 
-                    title='Register'
-                    onPress={this.handleSubmit} 
-                />
+                <View style={styles.card}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder='Username'
+                        onChangeText={value => this.onChangeText('username', value)} 
+                    />
+                    <TextInput 
+                        style={styles.input}
+                        placeholder='Password'
+                        onChangeText={value => this.onChangeText('password', value)}
+                    />
+                    <Button 
+                        title='Register'
+                        onPress={this.handleSubmit} 
+                    />
+                    {/* TODO: Change to text and link */}
+                    <Button
+                        title="Have an account? Login"
+                        onPress={() => this.props.navigation.navigate('Login')}
+                    />
+                </View>
             </View>
         );
     }
@@ -65,12 +76,22 @@ export default class RegisterScreen extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#fff',
-    },
-    input: {
-        width: 200,
-        height: 40,
-        fontSize: 12,
-    },
+        flexDirection: 'row',
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+      },
+      card: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        // TODO: use flexDirection 'column' to center form
+        height: 400,
+        width: 250,
+        backgroundColor: '#fff',
+      },
+      input: {
+          alignItems: 'center',
+          height: 40,
+          margin: 5,
+          fontSize: 18,
+      },
 });
