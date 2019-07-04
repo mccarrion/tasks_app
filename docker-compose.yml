@@ -2,6 +2,6 @@ version: '3.6'
 
 services:
   db:
-    build: ./database/
+    build: .
     ports:
       - 5432:5432
