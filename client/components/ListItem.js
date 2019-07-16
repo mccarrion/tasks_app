@@ -3,32 +3,32 @@ import { View, Text, StyleSheet, TouchableOpacity  } from 'react-native';
 import CheckBox from 'react-native-check-box';
 
 export class ListItem extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+  constructor(props) {
+    super(props);
+  }
 
-    render() {
-        return (
-            <View style={styles.listItem}>
-                <CheckBox checkBoxColor="#2F95DC" isChecked={this.props.data.completed} onClick={this.props.onCheckedChange}/>
+  render() {
+    return (
+      <View style={styles.listItem}>
+        <CheckBox checkBoxColor="#2F95DC" isChecked={this.props.data.completed} onClick={this.props.onCheckedChange}/>
 
-                <TouchableOpacity onPress={this.props.onClick}>
-                    <Text style={styles.taskText}>{this.props.data.title}</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }
+        <TouchableOpacity onPress={this.props.onClick}>
+          <Text style={styles.taskText}>{this.props.data.title}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
-    listItem: {
-        paddingLeft: 15,
-        paddingTop: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    taskText: {
-        fontSize: 20,
-        marginLeft: 10,
-    }
+  listItem: {
+    paddingLeft: 15,
+    paddingTop: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  taskText: {
+    fontSize: 20,
+    marginLeft: 10,
+  }
 });

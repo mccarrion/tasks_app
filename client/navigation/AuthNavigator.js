@@ -5,24 +5,24 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 
 const AuthStack = createStackNavigator(
-    {
-        Login: {
-            screen: LoginScreen,
-        },
-        Register: {
-            screen: RegisterScreen,
-        },
+  {
+    Login: {
+      screen: LoginScreen,
     },
-    {
-        initialRouteName: 'Login',
-    }
+    Register: {
+      screen: RegisterScreen,
+    },
+  },
+  {
+    initialRouteName: 'Login',
+  }
 );
 
 export default class AuthNavigator extends React.Component {
-    static router = AuthStack.router;
-    render() {
-        const { navigation } = this.props;
+  static router = AuthStack.router;
+  render() {
+    const { navigation } = this.props;
 
-        return <AuthStack navigation={navigation} />;
-    }
+    return <AuthStack navigation={navigation} />;
+  }
 }
