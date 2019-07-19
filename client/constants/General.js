@@ -1,5 +1,4 @@
-// Need to get token from local storage to add it for token 
-// with Auth prefix
+// Need to get token from local storage to add it for token with Auth prefix
 const userToken = await AsyncStorage.getItem('userToken');
 
 // Global Constants
