@@ -109,4 +109,8 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     backgroundColor: '#fff',
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 });
