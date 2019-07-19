@@ -5,6 +5,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
+// TODO: Switch over to an Interface.
 @MappedSuperclass
 public abstract class Base implements Serializable {
     private static final long serialVersionUID = 1L;
