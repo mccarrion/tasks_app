@@ -1,7 +1,11 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import { ExpoLinksView } from '@expo/samples';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+} from 'react-native';
 import { ListItem } from '../components/ListItem';
+import { API_URL, AUTH_TOKEN } from '../constants/General';
 
 export default class CompletedScreen extends React.Component {
   static navigationOptions = {

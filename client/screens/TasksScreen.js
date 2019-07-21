@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-  Platform,
   StyleSheet,
   Text,
   View,
   FlatList,
   Modal,
   TextInput,
-  Button,
   TouchableOpacity,
 } from 'react-native';
 import ActionButton from 'react-native-action-button';
