@@ -11,14 +11,12 @@ export default class ProfileScreen extends React.Component {
     title: 'Profile',
   };
 
-  async _signOut() {
+  _signOut = async () => {
     await AsyncStorage.removeItem('userToken');
     this.props.navigation.navigate('Auth');
   }
 
   render() {
-    /* Go ahead and delete ExpoConfigView and replace it with your
-     * content, we just wanted to give you a quick view of your config */
     return (
       <View style={styles.container}>
         <Button 
