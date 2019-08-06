@@ -4,7 +4,7 @@ import {
   View,
   FlatList,
 } from 'react-native';
-import { ListItem } from '../components/ListItem';
+import { TaskItem } from '../components/TaskItem';
 import { API_URL, AUTH_TOKEN } from '../constants/General';
 
 export default class CompletedScreen extends React.Component {
@@ -26,10 +26,12 @@ export default class CompletedScreen extends React.Component {
   }
 
   componentDidMount() {
+    /*
     this.fetchTasks().then((tasks) => {
       tasks.sort((a, b) => a.id = b.id);
       this.setState({tasks});
     });
+    */
   }
 
   async fetchTasks() {
@@ -93,13 +95,14 @@ export default class CompletedScreen extends React.Component {
       <View style={styles.container}>
         <FlatList
           data={this.state.tasks}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({item, index}) => (
-            <ListItem
-              data={item}
-              onClick={() => this.onItemClicked(index)}
-              onTaskCheckedChange={() => this.onTaskCheckedChange(index)}
-            />
+          keyExtractor={(item, index) => index}
+          renderItem={({item}) => (
+            <Text>{item.title}</Text>
+            // <TaskItem
+            //   data={item}
+            //   onClick={() => this.onItemClicked(index)}
+            //   onTaskCheckedChange={() => this.onTaskCheckedChange(index)}
+            // />
           )}
         />
       </View>
