@@ -5,7 +5,7 @@ import {
   FlatList,
 } from 'react-native';
 import { TaskItem } from '../components/TaskItem';
-import { API_URL, AUTH_TOKEN } from '../constants/General';
+import { API_URL } from '../constants/General';
 
 export default class CompletedScreen extends React.Component {
   static navigationOptions = {
@@ -15,42 +15,38 @@ export default class CompletedScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.fetchTasks = this.fetchTasks.bind(this);
     this.updateTask = this.updateTask.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
 
     this.state = {
       tasks: [],
       showEditWindow: false,
+      currentTaskIndex: 0,
+      currentTaskTitle: "",
+      currentTaskContent: "",
     };
   }
 
-  componentDidMount() {
-    /*
-    this.fetchTasks().then((tasks) => {
-      tasks.sort((a, b) => a.id = b.id);
-      this.setState({tasks});
-    });
-    */
-  }
-
-  async fetchTasks() {
-    const result = await fetch(`${API_URL}/tasks`, {
+  async componentDidMount() {
+    const token = await AsyncStorage.getItem('userToken');
+    const res = await fetch(`${API_URL}/tasks`, {
       method: 'GET',
       headers: {
-        'Authorization': AUTH_TOKEN,
-      }
-    });
-
-    return result.json();
+        'Authorization': token,
+      }})
+      .then(res => res.json());
+    
+    const data = res ? Object.values(res) : [];
+    this.setState({ tasks: data });
   }
 
   async updateTask(task) {
+    const token = await AsyncStorage.getItem('userToken');
     const result = await fetch(`${API_URL}/tasks/${task.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': AUTH_TOKEN,
+        'Authorization': token,
       },
       body: JSON.stringify(task),
     });
@@ -59,10 +55,11 @@ export default class CompletedScreen extends React.Component {
   }
 
   async deleteTask(task) {
-    const result = await fetch(`${API_URL}/tasks/${task.id}`, {
+    const token = await AsyncStorage.getItem('userToken');
+    await fetch(`${API_URL}/tasks/${task.id}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': AUTH_TOKEN,
+        'Authorization': token,
       },
     });
   }
