@@ -43,9 +43,11 @@ export default class TasksScreen extends React.Component {
       headers: {
         'Authorization': token,
       }})
-      .then(res => res.json());
-    
+      .then(res => res.json()); 
+    // This converts response object into an array that 
+    // can be read by FlatList
     const data = res ? Object.values(res) : [];
+    
     this.setState({ tasks: data });
   }
 
@@ -80,7 +82,7 @@ export default class TasksScreen extends React.Component {
 
   async deleteTask(task) {
     const token = await AsyncStorage.getItem('userToken');
-    const result = await fetch(`${API_URL}/tasks/${task.id}`, {
+    await fetch(`${API_URL}/tasks/${task.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': token,
@@ -164,9 +166,9 @@ export default class TasksScreen extends React.Component {
         <FlatList
           data={this.state.tasks}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({item}) => (
+          renderItem={({item, index}) => (
             <TaskItem
-              data={item}
+              task={item}
               onClick={() => this.onItemClicked(index)}
               onCheckedChange={() => this.onTaskCheckedChange(index)}
             />

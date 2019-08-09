@@ -35,8 +35,10 @@ export default class CompletedScreen extends React.Component {
         'Authorization': token,
       }})
       .then(res => res.json());
-    
+    // This converts response object into an array that 
+    // can be read by FlatList
     const data = res ? Object.values(res) : [];
+    
     this.setState({ tasks: data });
   }
 
