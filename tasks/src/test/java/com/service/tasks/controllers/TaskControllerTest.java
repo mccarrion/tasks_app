@@ -1,6 +1,7 @@
 package com.service.tasks.controllers;
 
 import com.service.tasks.models.Task;
+import com.service.tasks.repositories.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +10,18 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //import static org.junit.Assert.*;
@@ -31,24 +37,46 @@ public class TaskControllerTest {
     @Autowired
     private TaskController controller;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     public void contextLoads() throws Exception {
         assertThat(controller).isNotNull();
     }
 
+    /**
+     * This is the method to get the Authorization header in order
+     * to test the REST APIs
+     * @param username
+     * @param password
+     * @return
+     */
+    private String getAuthToken(String username, String password) throws Exception {
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("username", username);
+        params.add("password", password);
+
+        ResultActions result = mvc.perform(post("/login")
+                .params(params)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk());
+        return null;
+    }
+
     @Test
-    @WithMockUser(username="john")
+    @WithMockUser(value="john")
     public void getTasksByUser() throws Exception {
-        /**
-         * TODO: Uncomment this and integrate into test
-         * Task task = new Task();
-         * task.setCreatedBy("john");
-         * task.setTitle("Go to gym");
-         * task.setContent("Workout for 30 minutes");
-         * task.setCompleted(False);
-         *
-         * given(controller.getTasksByUser(task.getCreatedBy())).willReturn(task);
-         */
+        // TODO: Uncomment this and integrate into test
+        Task task = new Task();
+        task.setCreatedBy(userRepository.findByUsername("john"));
+        task.setTitle("Go to gym");
+        task.setContent("Workout for 30 minutes");
+        task.setCompleted(false);
+
+        //given(controller.getTasksByUser(task.getCreatedBy())).willReturn(task);
 
         // Currently basic GET request
         mvc.perform(get("/tasks")
