@@ -47,6 +47,25 @@ public class TaskControllerTest {
     }
 
     /**
+     * Register a user before making POST requests. This method should be moved over to tests
+     * for either the User or the Security tests and be brought in through Composition
+     * @param username
+     * @param password
+     * @throws Exception
+     */
+    private void registerUser(String username, String password) throws Exception {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("username", username);
+        params.add("password", password);
+
+        ResultActions res = mvc.perform(post("/users/register")
+                .params(params)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    /**
      * This is the method to get the Authorization header in order
      * to test the REST APIs
      * @param username
