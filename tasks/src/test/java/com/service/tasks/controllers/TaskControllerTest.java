@@ -93,6 +93,11 @@ public class TaskControllerTest {
     @Test
     @WithMockUser(value="john")
     public void getTasksByUser() throws Exception {
+
+        // See if MockUser works first
+        // registerUser("john", "hello1234");
+        String token = getAuthToken("john", "hello1234");
+
         // TODO: Uncomment this and integrate into test
         Task task = new Task();
         task.setCreatedBy(userRepository.findByUsername("john"));
@@ -104,6 +109,7 @@ public class TaskControllerTest {
 
         // Currently basic GET request
         mvc.perform(get("/tasks")
+                .header("Authorization", token)
                 .with(user("john").password("hello1234"))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk());
