@@ -116,7 +116,22 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void addTask() {
+    @WithMockUser(value="john")
+    public void addTask() throws Exception {
+
+        String token = getAuthToken("john", "hello1234");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("title", "Go to gym");
+        params.add("content", "Workout for 30 minutes");
+
+        mvc.perform(post("/tasks")
+                .header("Authorization", token)
+                .with(user("john").password("hello1234"))
+                .params(params)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
