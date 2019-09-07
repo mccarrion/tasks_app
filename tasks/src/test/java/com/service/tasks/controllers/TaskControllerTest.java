@@ -15,14 +15,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //import static org.junit.Assert.*;
@@ -116,7 +116,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    @WithMockUser(value="john")
+    @WithMockUser(username="john", password="hello1234") // Testing how MockUser annotation works
     public void addTask() throws Exception {
 
         String token = getAuthToken("john", "hello1234");
@@ -135,11 +135,35 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void updateTask() {
+    @WithMockUser(value="john")
+    public void updateTask() throws Exception{
+
+        String token = getAuthToken("john", "hello1234");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("title", "Read");
+        params.add("content", "Read for 30 minutes");
+
+        mvc.perform(MockMvcRequestBuilders.put("/tasks")
+                .header("Authorization", token)
+                .with(user("john").password("hello1234"))
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void deleteTask() {
+    @WithMockUser(value="john")
+    public void deleteTask() throws Exception {
+
+        String token = getAuthToken("john", "hello1234");
+
+        mvc.perform(MockMvcRequestBuilders.delete("/tasks")
+                .header("Authorization", token)
+                .with(user("john").password("hello1234"))
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
