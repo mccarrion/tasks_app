@@ -2,6 +2,7 @@ package com.service.tasks.controllers;
 
 import com.service.tasks.models.Task;
 import com.service.tasks.repositories.UserRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +54,11 @@ public class TaskControllerTest {
      * @param password
      * @throws Exception
      */
-    private void registerUser(String username, String password) throws Exception {
+    @Before
+    public void setup() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("username", username);
-        params.add("password", password);
+        params.add("username", "john");
+        params.add("password", "hello1234");
 
         ResultActions res = mvc.perform(post("/users/register")
                 .params(params)
