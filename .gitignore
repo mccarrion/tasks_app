@@ -1,6 +1,7 @@
 # Other
 /cmake-build-*/
 /.idea
+/lvgl
 
 # Prerequisites
 *.d
