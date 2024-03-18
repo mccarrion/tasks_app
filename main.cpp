@@ -1,28 +1,24 @@
 #define _DEFAULT_SOURCE
+#include <iostream>
 #include <SDL2/SDL.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <unistd.h>
 #include "lvgl/lvgl.h"
 #include "lvgl/examples/lv_examples.h"
 #include "lvgl/demos/lv_demos.h"
+#include "lv_tasks.h"
 
 static lv_display_t* hal_init(int32_t width, int32_t height);
 
 int main() {
     lv_init();
-
     hal_init(1080, 720);
 
-    SDL_Event event;
-    bool eventLoopActive = true;
-    while (eventLoopActive) {
+    //lv_demo_widgets();
+    lv_tasks_widget();
+    while (1) {
         lv_timer_handler();
         usleep(10 * 1000);
-        while (SDL_PollEvent(&event) != 0) {
-            if (event.type == SDL_QUIT) {
-                eventLoopActive = false;
-            }
-        }
     }
     lv_deinit();
     return 0;
