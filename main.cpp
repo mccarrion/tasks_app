@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <cstdlib>
 #include <unistd.h>
+#include "duckdb.hpp"
 #include "lvgl/lvgl.h"
 #include "lvgl/examples/lv_examples.h"
 #include "lvgl/demos/lv_demos.h"
