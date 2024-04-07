@@ -65,6 +65,34 @@ Connection init_db() {
     return con;
 }
 
+/* textarea event callback */
+static void ta_event_cb(lv_event_t *e) {
+    lv_event_code_t code = lv_event_get_code(e);
+    auto *ta = static_cast<lv_obj_t *> (lv_event_get_target(e));
+    auto *kb = static_cast<lv_obj_t *> (lv_event_get_user_data(e));
+    std::string hi = "hi";
+    if (code == LV_EVENT_FOCUSED) {
+        if (lv_indev_get_type(lv_indev_active()) != LV_INDEV_TYPE_KEYPAD) {
+            lv_keyboard_set_textarea(kb, ta);
+            lv_obj_set_style_max_height(kb, LV_HOR_RES * 2 / 3, 0);
+            lv_obj_update_layout(tv);
+            lv_obj_set_height(tv, LV_VER_RES - lv_obj_get_height(kb));
+            lv_obj_remove_flag(kb, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_scroll_to_view_recursive(ta, LV_ANIM_OFF);
+            lv_indev_wait_release(static_cast<lv_indev_t *>(lv_event_get_param(e)));
+        }
+    } else if (code == LV_EVENT_DEFOCUSED) {
+        lv_keyboard_set_textarea(kb, nullptr);
+        lv_obj_set_height(tv, LV_VER_RES);
+        lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+        lv_indev_reset(nullptr, ta);
+    } else if (code == LV_EVENT_READY || code == LV_EVENT_CANCEL) {
+        lv_obj_set_height(tv, LV_VER_RES);
+        lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+        lv_indev_reset(nullptr, ta);
+    }
+}
+
 static void tasks_create(lv_obj_t *parent) {
     // Initialize container
     lv_obj_t *container = lv_obj_create(parent);
@@ -84,12 +112,16 @@ static void tasks_create(lv_obj_t *parent) {
     lv_label_set_text(description_label, "Create Task");
     lv_obj_add_style(description_label, &style_text_muted, 0);
 
+    lv_obj_t *kb = lv_keyboard_create(lv_screen_active());
+    lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+
     lv_obj_t *description = lv_textarea_create(container);
     lv_obj_set_grid_cell(description,
                          LV_GRID_ALIGN_STRETCH, 0, 1,
                          LV_GRID_ALIGN_STRETCH, 2, 1);
     lv_textarea_set_one_line(description, true);
     lv_textarea_set_placeholder_text(description, "Start adding task here...");
+    lv_obj_add_event_cb(description, ta_event_cb, LV_EVENT_ALL, kb);
 
     /* Container and Grid properties are down here so that later on
      * they can become variables that are set by the code above */
