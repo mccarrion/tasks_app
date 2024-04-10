@@ -1,33 +1,12 @@
 #ifndef TASKS_H
 #define TASKS_H
 
-typedef enum {
-    DISP_SMALL,
-    DISP_MEDIUM,
-    DISP_LARGE,
-} disp_size_t;
-
-static disp_size_t disp_size;
-
 static lv_obj_t *tv;
 static lv_obj_t *calendar;
 static lv_style_t style_text_muted;
 static lv_style_t style_title;
 static lv_style_t style_icon;
 static lv_style_t style_bullet;
-
-static lv_obj_t *scale1;
-static lv_obj_t *scale2;
-static lv_obj_t *scale3;
-
-static lv_obj_t *chart1;
-static lv_obj_t *chart2;
-static lv_obj_t *chart3;
-
-static lv_chart_series_t *ser1;
-static lv_chart_series_t *ser2;
-static lv_chart_series_t *ser3;
-static lv_chart_series_t *ser4;
 
 static const lv_font_t *font_large;
 static const lv_font_t *font_normal;
@@ -36,15 +15,7 @@ static uint32_t session_desktop = 1000;
 static uint32_t session_tablet = 1000;
 static uint32_t session_mobile = 1000;
 
-static lv_style_t scale3_section1_main_style;
-static lv_style_t scale3_section1_indicator_style;
-static lv_style_t scale3_section1_tick_style;
-static lv_style_t scale3_section2_main_style;
-static lv_style_t scale3_section2_indicator_style;
-static lv_style_t scale3_section2_tick_style;
-static lv_style_t scale3_section3_main_style;
-static lv_style_t scale3_section3_indicator_style;
-static lv_style_t scale3_section3_tick_style;
+static void lv_tasks_widget();
 
 using namespace duckdb;
 
@@ -64,6 +35,8 @@ Connection init_db() {
 
     return con;
 }
+
+inline static Connection con = init_db();
 
 /* textarea event callback */
 static void ta_event_cb(lv_event_t *e) {
@@ -93,24 +66,54 @@ static void ta_event_cb(lv_event_t *e) {
     }
 }
 
+static void submit_btn_event_cb(lv_event_t *e) {
+    lv_event_code_t code = lv_event_get_code(e);
+    auto *ta_data = static_cast<lv_obj_t *> (lv_event_get_user_data(e));
+    if (code == LV_EVENT_CLICKED) {
+        const char *task_desc = lv_textarea_get_text(ta_data);
+        std::string statement = "INSERT INTO tasks (COMPLETE, DESCRIPTION) VALUES (false, '";
+        statement += task_desc;
+        statement.append("');");
+        con.Query(statement);
+        lv_textarea_set_text(ta_data, "");
+        LV_LOG_USER("Clicked");
+        lv_tasks_widget();
+    }
+}
+
 static void tasks_create(lv_obj_t *parent) {
     // Initialize container
     lv_obj_t *container = lv_obj_create(parent);
+    std::vector<int32_t> row_heights;
+    static int32_t row_dsc[50] = {};
 
     // Define tasks panel
     lv_obj_t *title = lv_label_create(container);
     lv_obj_set_grid_cell(title,
                          LV_GRID_ALIGN_STRETCH, 0, 1,
-                         LV_GRID_ALIGN_STRETCH, 0, 1);
+                         LV_GRID_ALIGN_STRETCH, (int) row_heights.size(), 1);
     lv_label_set_text(title, "Your Tasks");
     lv_obj_add_style(title, &style_title, 0);
+    row_heights.insert(row_heights.end(), 20);
+
+    unique_ptr<MaterializedQueryResult> result = con.Query("SELECT * FROM tasks;");
+    for (size_t i = 0; i < result->RowCount(); i++) {
+        lv_obj_t * cb;
+        cb = lv_checkbox_create(container);
+        lv_checkbox_set_text(cb, result->GetValue(1, i).ToString().c_str());
+        lv_obj_set_grid_cell(cb,
+                             LV_GRID_ALIGN_STRETCH, 0, 1,
+                             LV_GRID_ALIGN_STRETCH, (int) row_heights.size(), 1);
+        row_heights.insert(row_heights.end(), 20);
+    }
 
     lv_obj_t *description_label = lv_label_create(container);
     lv_obj_set_grid_cell(description_label,
                          LV_GRID_ALIGN_STRETCH, 0, 1,
-                         LV_GRID_ALIGN_STRETCH, 1, 1);
+                         LV_GRID_ALIGN_STRETCH, (int) row_heights.size(), 1);
     lv_label_set_text(description_label, "Create Task");
     lv_obj_add_style(description_label, &style_text_muted, 0);
+    row_heights.insert(row_heights.end(), 12);
 
     lv_obj_t *kb = lv_keyboard_create(lv_screen_active());
     lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
@@ -118,21 +121,42 @@ static void tasks_create(lv_obj_t *parent) {
     lv_obj_t *description = lv_textarea_create(container);
     lv_obj_set_grid_cell(description,
                          LV_GRID_ALIGN_STRETCH, 0, 1,
-                         LV_GRID_ALIGN_STRETCH, 2, 1);
+                         LV_GRID_ALIGN_STRETCH, (int) row_heights.size(), 1);
     lv_textarea_set_one_line(description, true);
     lv_textarea_set_placeholder_text(description, "Start adding task here...");
     lv_obj_add_event_cb(description, ta_event_cb, LV_EVENT_ALL, kb);
+    row_heights.insert(row_heights.end(), 100);
+
+    lv_obj_t *submit_btn = lv_btn_create(container);
+    lv_obj_set_grid_cell(submit_btn,
+                         LV_GRID_ALIGN_START, 0, 1,
+                         LV_GRID_ALIGN_STRETCH, (int) row_heights.size(), 1);
+    lv_obj_add_event_cb(submit_btn, submit_btn_event_cb, LV_EVENT_ALL, description);
+    lv_obj_t *label = lv_label_create(submit_btn);
+    lv_label_set_text(label, "Submit");
+    lv_obj_center(submit_btn);
+    row_heights.insert(row_heights.end(), 40);
 
     /* Container and Grid properties are down here so that later on
      * they can become variables that are set by the code above */
     // Panel layout
     static int32_t col_dsc[] = {LV_PCT(95), LV_GRID_TEMPLATE_LAST};
-    static int32_t row_dsc[] = {20, 12, 100, LV_GRID_TEMPLATE_LAST};
+    int row = 0;
+    for (int32_t row_height: row_heights) {
+        row_dsc[row] = row_height;
+        row++;
+        /* TODO: add better handling for pre-sized array
+         * TODO: cannot go out of bounds on row_dsc size */
+        if (row + 1 >= 50) {
+            break;
+        }
+    }
+    row_dsc[row] = LV_GRID_TEMPLATE_LAST;
 
     // Container sizing
     lv_obj_set_style_grid_column_dsc_array(container, col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(container, row_dsc, 0);
-    lv_obj_set_size(container, LV_PCT(95), 300);
+    lv_obj_set_size(container, LV_PCT(95), 500);
     lv_obj_set_layout(container, LV_LAYOUT_GRID);
 }
 
@@ -146,14 +170,11 @@ static void tabview_delete_event_cb(lv_event_t *e) {
 }
 
 inline void lv_tasks_widget() {
-    // initialize db connection
-    auto con = init_db();
 
     // assume DISP_LARGE
     int32_t tab_h = 70;
     font_large = &lv_font_montserrat_24;
     font_normal = &lv_font_montserrat_16;
-    disp_size = DISP_LARGE;
 
 #if LV_USE_THEME_DEFAULT
     lv_theme_default_init(nullptr,
