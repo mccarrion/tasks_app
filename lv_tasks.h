@@ -160,6 +160,61 @@ static void tasks_create(lv_obj_t *parent) {
     lv_obj_set_layout(container, LV_LAYOUT_GRID);
 }
 
+static void profile_create(lv_obj_t *parent) {
+    // Initialize container
+    lv_obj_t *container = lv_obj_create(parent);
+    std::vector<int32_t> row_heights;
+    static int32_t row_dsc[50] = {};
+
+    // Define profile panel
+    lv_obj_t *title = lv_label_create(container);
+    lv_obj_set_grid_cell(title,
+                         LV_GRID_ALIGN_STRETCH, 0, 1,
+                         LV_GRID_ALIGN_STRETCH, (int) row_heights.size(), 1);
+    lv_label_set_text(title, "Your Profile");
+    lv_obj_add_style(title, &style_title, 0);
+    row_heights.insert(row_heights.end(), 20);
+
+    lv_obj_t *name = lv_label_create(container);
+    lv_obj_set_grid_cell(name,
+                         LV_GRID_ALIGN_STRETCH, 0, 1,
+                         LV_GRID_ALIGN_STRETCH, (int) row_heights.size(), 1);
+    lv_label_set_text(name, "Name: John Smith");
+    lv_obj_add_style(name, &style_title, 0);
+    row_heights.insert(row_heights.end(), 20);
+
+    lv_obj_t *email = lv_label_create(container);
+    lv_obj_set_grid_cell(email,
+                         LV_GRID_ALIGN_STRETCH, 0, 1,
+                         LV_GRID_ALIGN_STRETCH, (int) row_heights.size(), 1);
+    lv_label_set_text(email, "Email: john.smith@@email.com");
+    lv_obj_add_style(email, &style_title, 0);
+    row_heights.insert(row_heights.end(), 20);
+
+
+    /* Container and Grid properties are down here so that later on
+     * they can become variables that are set by the code above */
+    // Panel layout
+    static int32_t col_dsc[] = {LV_PCT(95), LV_GRID_TEMPLATE_LAST};
+    int row = 0;
+    for (int32_t row_height: row_heights) {
+        row_dsc[row] = row_height;
+        row++;
+        /* TODO: add better handling for pre-sized array
+         * TODO: cannot go out of bounds on row_dsc size */
+        if (row + 1 >= 50) {
+            break;
+        }
+    }
+    row_dsc[row] = LV_GRID_TEMPLATE_LAST;
+
+    // Container sizing
+    lv_obj_set_style_grid_column_dsc_array(container, col_dsc, 0);
+    lv_obj_set_style_grid_row_dsc_array(container, row_dsc, 0);
+    lv_obj_set_size(container, LV_PCT(95), 150);
+    lv_obj_set_layout(container, LV_LAYOUT_GRID);
+}
+
 static void tabview_delete_event_cb(lv_event_t *e) {
     lv_event_code_t code = lv_event_get_code(e);
 
@@ -195,6 +250,7 @@ inline void lv_tasks_widget() {
     lv_obj_t *t2 = lv_tabview_add_tab(tv, "Profile");
 
     tasks_create(t1);
+    profile_create(t2);
 }
 
 #endif //TASKS_H
