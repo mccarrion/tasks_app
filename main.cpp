@@ -7,7 +7,7 @@
 #include "lvgl/lvgl.h"
 #include "lvgl/examples/lv_examples.h"
 #include "lvgl/demos/lv_demos.h"
-#include "lv_tasks.h"
+#include "lv_tasks.hpp"
 
 static lv_display_t* hal_init(int32_t width, int32_t height);
 
